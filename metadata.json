@@ -1,0 +1,6 @@
+{
+  "name": "Nano Banana Batch Upscaler",
+  "description": "Automated batch image upscaling using Gemini Nano Banana models with smart rate-limit management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
