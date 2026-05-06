@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function upscaleImage(imageUrl: string, providedKey?: string | null, guide?: string): Promise<string> {
   try {
@@ -6,14 +6,21 @@ export async function upscaleImage(imageUrl: string, providedKey?: string | null
     const MODEL_ID = 'gemini-2.0-flash';
     
     // Choose the key (provided takes precedence for "Paid" mode)
-    let apiKey = providedKey || process.env.GEMINI_API_KEY;
+    let apiKey = (providedKey && providedKey !== 'null' && providedKey !== 'undefined') 
+      ? providedKey 
+      : process.env.GEMINI_API_KEY;
     
-    // Filter out potential placeholder values from .env.example
-    if (apiKey === 'MY_GEMINI_API_KEY' || !apiKey) {
-      throw new Error('API_KEY_MISSING: No Gemini API key found. Please provide a real key in Pro mode or ensure GEMINI_API_KEY is set in secrets.');
+    // Clean up key (remove quotes and spaces)
+    if (apiKey && typeof apiKey === 'string') {
+      apiKey = apiKey.replace(/['"]/g, '').trim();
+    }
+    
+    // Filter out potential placeholder values
+    if (!apiKey || apiKey === 'MY_GEMINI_API_KEY' || apiKey === 'undefined' || apiKey === 'null' || apiKey === '') {
+      throw new Error(`API_KEY_MISSING: No valid Gemini API key found (Value: ${apiKey}). Please provide a key in Pro mode or set GEMINI_API_KEY in secrets.`);
     }
 
-    const genAI = new GoogleGenAI(apiKey);
+    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: MODEL_ID });
 
     // Convert blob URL or data URL to base64
@@ -88,4 +95,15 @@ export function parseRestorationTime(error: any): number | null {
     return 60000;
   }
   return null;
+}
+
+export function formatDuration(ms: number | null): string {
+  if (ms === null || ms <= 0) return '0s';
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (minutes > 0) {
+    return `${minutes}m ${seconds}s`;
+  }
+  return `${seconds}s`;
 }
