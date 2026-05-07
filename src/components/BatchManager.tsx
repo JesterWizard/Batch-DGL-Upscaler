@@ -749,7 +749,7 @@ function ImageCard({
 
       {isList && img.status === 'failed' && (
         <div className="flex items-center gap-3">
-          <div className="hidden md:block max-w-[200px] truncate text-[10px] font-mono text-red-400 bg-red-950/30 px-2 py-1 border border-red-900/40">
+          <div className="hidden md:block max-w-[200px] whitespace-normal break-words text-[10px] font-mono text-red-400 bg-red-950/30 px-2 py-1 border border-red-900/40">
             {img.error}
           </div>
           {onRetry && (
